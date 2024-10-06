@@ -44,9 +44,18 @@ class EPay {
         $str = stripslashes(urldecode(http_build_query($params))) . $this->config['key'];
         $params['sign'] = md5($str);
         $params['sign_type'] = 'MD5';
+    
+        // Generate an HTML form for POST request
+        $form = '<form id="epayForm" action="' . $this->config['url'] . '/submit.php" method="POST">';
+        foreach ($params as $key => $value) {
+            $form .= '<input type="hidden" name="' . htmlspecialchars($key) . '" value="' . htmlspecialchars($value) . '">';
+        }
+        $form .= '</form>';
+        $form .= '<script>document.getElementById("epayForm").submit();</script>';
+    
         return [
-            'type' => 1, // 0:qrcode 1:url
-            'data' => $this->config['url'] . '/submit.php?' . http_build_query($params)
+            'type' => 2, // 2:form
+            'data' => $form
         ];
     }
 
